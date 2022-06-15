@@ -17,7 +17,7 @@ function arrayBuffer2Json(arrayBuffer) {
 
 // the actual implementation which wires the pipeline together.
 // the hook provides a means to manipulate raw data - it's return value doesn't neccessarily have to be a JSON object.
-export function run(processingCfg, callback, hook=arrayBuffer2Json) {
+export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json) {
     let output = {}
     Promise
     .all( processingCfg.map(el => { return fetch(el.input) }) )     // fetch data; only continue happy path when all requests are successfully finished
@@ -38,5 +38,8 @@ export function run(processingCfg, callback, hook=arrayBuffer2Json) {
             callback(output)
         })
     })
-    .catch( e => console.log(e.message) )
+    .catch( e => {
+        console.log(e.message) 
+        failCallback(e)
+    })
 }
