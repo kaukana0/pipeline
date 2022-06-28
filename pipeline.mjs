@@ -23,7 +23,13 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
     .all( processingCfg.map(el => { return fetch(el.input) }) )     // fetch data; only continue happy path when all requests are successfully finished
     .then(responses => {
         Promise
-        .all( responses.map(response => { return response.arrayBuffer() }) )   // get json from it
+        .all( responses.map(response => { 
+            if(response.ok) {
+                return response.arrayBuffer()       // get json from it
+            } else {
+                throw Error("pipeline: response is not ok. native error follows: \n\n" + response.statusText)
+            }
+        }))
         .then(arrBuffs => { 
             // let a chain of functions do sth with it (i.e. "process" it).
             // this follows a cumulative fashion, meaning each processor
@@ -39,7 +45,6 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
         })
     })
     .catch( e => {
-        console.log(e.message) 
         failCallback(e)
     })
 }
