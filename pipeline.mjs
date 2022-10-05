@@ -19,8 +19,23 @@ function arrayBuffer2Json(arrayBuffer) {
 // the hook provides a means to manipulate raw data - it's return value doesn't neccessarily have to be a JSON object.
 export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json) {
     let output = {}
+
     Promise
-    .all( processingCfg.map(el => { return fetch(el.input) }) )     // fetch data; only continue happy path when all requests are successfully finished
+    .all( processingCfg.map(el => {
+            if(el.inputFromMemory) {
+                return new Promise(
+                    function(resolve,reject) {
+                        resolve(new Response(
+                            new Blob([el.inputFromMemory], {type:"application/json"}),
+                            {status:200})
+                        )
+                    }
+                )
+            } else {
+                return fetch(el.input)
+            }
+        })      // continue happy path only when all requests are successfully finished
+     )     
     .then(responses => {
         Promise
         .all( responses.map(response => { 

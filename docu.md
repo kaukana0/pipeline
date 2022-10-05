@@ -8,8 +8,12 @@
             processors : [extractSomeData, mergeSomeData]
         },
         {
-            input : "https://anotherWebApi",
+            input : "someLocalFile.csv",
             processors : [extractSomeDataDifferently]
+        },
+        {
+            inputFromMemory : "{some: 'data not retrieved via fetch'}",
+            processors : [doSomething]
         }
     ]
 
@@ -27,6 +31,8 @@
         ...
         output["bla2"] = ...
     }
+
+    function doSomething(inputData, output) {...}
 
 # usage
 
