@@ -20,7 +20,7 @@ function arrayBuffer2Json(arrayBuffer) {
 export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json) {
     let output = {}
 
-    Promise
+    Promise     // get data in parallel. order is preserved.
     .all( processingCfg.map(el => {
             if(el.inputFromMemory) {
                 return new Promise(
@@ -35,7 +35,8 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
                 return fetch(el.input)
             }
         })      // continue happy path only when all requests are successfully finished
-     )     
+     )
+     // all data is available, go through the processors
     .then(responses => {
         Promise
         .all( responses.map(response => { 
