@@ -22,20 +22,26 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
 
     Promise     // get data in parallel. order is preserved.
     .all( processingCfg.map(el => {
-            if(el.inputFromMemory) {
-                return new Promise(
-                    function(resolve,reject) {
-                        resolve(new Response(
-                            new Blob([el.inputFromMemory], {type:"application/json"}),
-                            {status:200})
-                        )
-                    }
-                )
+            if(typeof el.cache !== "object") {
+                return fetch(el.input)  // the usual way w/o caching behaviour
             } else {
-                return fetch(el.input)
+                const data = el.cache.restore()   // let the user provide (stored or otherwise obtained) data
+                if(data) {
+                    return new Promise(
+                        function(resolve,reject) {
+                            resolve(new Response(
+                                new Blob([data]),
+                                {status:200})
+                            )
+                        }
+                    )
+                } else {
+                    return fetch(el.input)
+                }
             }
         })      // continue happy path only when all requests are successfully finished
      )
+
      // all data is available, go through the processors
     .then(responses => {
         Promise
@@ -53,6 +59,9 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
             arrBuffs.map( (arrBuff,i) => {
                 const data = hook(arrBuff)
                 processingCfg[i].processors.forEach( function(processor){
+                    if(typeof processingCfg[i].cache === "object") {
+                        processingCfg[i].cache.store(data)  // let the user handle storage of data
+                    }
                     processor(data, output)
                 })
             } )
@@ -60,6 +69,7 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
             callback(output)
         })
     })
+
     .catch( e => {
         failCallback(e)
     })
