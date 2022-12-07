@@ -12,7 +12,11 @@
             processors : [extractSomeDataDifferently]
         },
         {
-            inputFromMemory : "{some: 'data not retrieved via fetch'}",
+            // input:...  only accessed if restore() returns a truthy value
+            cache: {
+				store: (data) => ... ,
+				restore: () => "{some: 'data not retrieved via fetch'}"
+			},
             processors : [doSomething]
         }
     ]
@@ -50,9 +54,10 @@
 # explanation
 
 - get data from "input" source.
-- then give that input and an initially blank "output" object to each of a list of "processors".
+- then give that input + an initially blank "output" object to each of a list of "processors".
 - every processor is supposed to take the "input" and modify the "output" in a cumulative fashion.
 
 ## note
 
 order of processors matters - within the processingCfg array as well as within the processors arrays.
+The changes on output object are available in subsequent processors.
