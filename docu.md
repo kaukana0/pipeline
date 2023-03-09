@@ -2,53 +2,53 @@
 # example for processingCfg
 
 
-    const processingCfg = [
-        {
-            input : "https://someWebApi",
-            processors : [extractSomeData, mergeSomeData]
-        },
-        {
-            input : "someLocalFile.csv",
-            processors : [extractSomeDataDifferently]
-        },
-        {
-            // input:...  only accessed if restore() returns a truthy value
-            cache: {
-				store: (data) => ... ,
-				restore: () => "{some: 'data not retrieved via fetch'}"
+	const processingCfg = [
+		{
+			input : "https://someWebApi",
+			processors : [extractSomeData, mergeSomeData]
+		},
+		{
+			input : "someLocalFile.csv",
+			processors : [extractSomeDataDifferently]
+		},
+		{
+			// input:...  only accessed if restore() returns a truthy value
+			cache: {
+				store: (data, key) => ... ,
+				restore: (id) => "{some: 'data not retrieved via fetch'}"
 			},
-            processors : [doSomething]
-        }
-    ]
+			processors : [doSomething]
+		}
+	]
 
 
-    function extractSomeData(inputData, output) {
-        ...
-        output["bla"] = inputData["here"]
-    }
+	function extractSomeData(inputData, output) {
+		...
+		output["bla"] = inputData["here"]
+	}
 
-    function mergeSomeData(inputData, output) {
-        output["bla"] = { ...output["bla"], ...inputData["there"] }
-    }
+	function mergeSomeData(inputData, output) {
+		output["bla"] = { ...output["bla"], ...inputData["there"] }
+	}
 
-    function extractSomeDataDifferently(inputData, output) {
-        ...
-        output["bla2"] = ...
-    }
+	function extractSomeDataDifferently(inputData, output) {
+		...
+		output["bla2"] = ...
+	}
 
-    function doSomething(inputData, output) {...}
+	function doSomething(inputData, output) {...}
 
 # usage
 
-    pipeline.run(
-        processingCfg,
-        (data) => {
-            // do something with data 
-            // (data is actually "output" from above 
-            // after the whole pipeline of processors ran through)
-            let a = data.bla
-            let b = data.bla2
-    })
+	pipeline.run(
+		processingCfg,
+		(data) => {
+			// do something with data 
+			// (data is actually "output" from above 
+			// after the whole pipeline of processors ran through)
+			let a = data.bla
+			let b = data.bla2
+	})
 
 
 # explanation
