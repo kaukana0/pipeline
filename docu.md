@@ -61,3 +61,8 @@
 
 order of processors matters - within the processingCfg array as well as within the processors arrays.
 The changes on output object are available in subsequent processors.
+
+## cache
+
+- it lets the user store/retrieve **raw** data
+- after retrieval of data from cache, the procssors are run

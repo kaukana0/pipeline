@@ -49,7 +49,12 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
             if(response.ok) {
                 return response.arrayBuffer()       // get json from it
             } else {
-                throw Error("pipeline: response is not ok. native error follows: \n\n" + response.statusText)
+                const txt = `pipeline: response is not ok (${response.statusText}).`
+                // TODO: only 1 throw
+                if(response.status === 400) {
+                    const x = response.text().then(r=>{throw Error(txt+" Response text:\n"+r)})
+                }
+                throw Error(txt)
             }
         }))
         .then(arrBuffs => { 
