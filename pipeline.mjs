@@ -25,7 +25,7 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
             if(typeof el.cache !== "object") {
                 return fetch(el.input)  // the usual way w/o caching behaviour
             } else {
-                const data = el.cache.restore()   // let the user provide (stored or otherwise obtained) data
+                const data = el.cache.restore(el.input)   // let the user provide (stored or otherwise obtained) data
                 if(data) {
                     return new Promise(
                         function(resolve,reject) {
