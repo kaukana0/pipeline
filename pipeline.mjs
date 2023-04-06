@@ -67,7 +67,8 @@ export function run(processingCfg, callback, failCallback, hook=arrayBuffer2Json
                     if(typeof processingCfg[i].cache === "object") {
                         processingCfg[i].cache.store(data)  // let the user handle storage of data
                     }
-                    processor(data, output)
+                    // inputDataFromRequest, inputDataFromCfg, output
+                    processor(data, processingCfg[i].data, output)
                 })
             } )
             // finally, let the module user do sth with the completely processed output.
